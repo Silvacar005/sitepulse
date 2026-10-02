@@ -38,7 +38,7 @@ def test_health_endpoint():
     assert response.json()["status"] == "ok"
 
 
-def test_scan_endpoint_returns_structured_results(monkeypatch):
+def test_scan_endpoint_saves_and_returns_structured_results(monkeypatch):
     page = make_page()
 
     monkeypatch.setattr(
@@ -84,13 +84,25 @@ def test_scan_endpoint_returns_structured_results(monkeypatch):
     assert response.status_code == 200
 
     data = response.json()
+    assert isinstance(data["id"], int)
     assert data["site_health"] == 97
     assert data["pages_scanned"] == 1
     assert data["total_issues"] == 1
     assert data["severity"] == {"high": 0, "medium": 0, "low": 1}
     assert data["pages"][0]["score"] == 97
+    assert data["pages"][0]["meta_description"] == "A description"
     assert data["link_check"]["checked"] == 1
     assert data["link_check"]["broken_count"] == 1
+
+    saved_response = client.get(f"/api/scans/{data['id']}")
+    assert saved_response.status_code == 200
+    assert saved_response.json()["id"] == data["id"]
+    assert saved_response.json()["site_health"] == 97
+
+    history_response = client.get("/api/scans?limit=100")
+    assert history_response.status_code == 200
+    history_ids = [item["id"] for item in history_response.json()["scans"]]
+    assert data["id"] in history_ids
 
 
 def test_scan_request_limits_are_validated():
@@ -110,3 +122,9 @@ def test_private_url_is_rejected():
 
     assert response.status_code == 400
     assert "public website" in response.json()["detail"].lower()
+
+
+def test_missing_saved_scan_returns_404():
+    response = client.get("/api/scans/999999999")
+
+    assert response.status_code == 404

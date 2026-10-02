@@ -3,9 +3,11 @@
 SitePulse is a Python website quality scanner and REST API that analyzes public
 websites for common SEO, accessibility, structural, performance, and link issues.
 
-## Current version: v0.3.0
+## Current version: v0.4.0
 
-SitePulse includes:
+SitePulse now persists scan history in a relational SQLite database.
+
+### Current capabilities
 
 - single-page scanning
 - breadth-first multi-page crawling
@@ -16,8 +18,10 @@ SitePulse includes:
 - missing image alt-text checks
 - internal and external link discovery
 - optional internal broken-link checking
-- FastAPI REST API
-- API input limits and basic private-network target protection
+- FastAPI REST API with interactive OpenAPI documentation
+- relational scan history with SQLAlchemy
+- saved pages, issues, crawl errors, and broken links
+- API input limits and private-network target protection
 - automated tests with GitHub Actions
 
 ## Tech stack
@@ -25,40 +29,28 @@ SitePulse includes:
 - Python
 - FastAPI
 - Pydantic
+- SQLAlchemy
+- SQLite
 - Requests
 - Beautiful Soup
 - Pytest
 - HTTPX
 - GitHub Actions
 
-## Project structure
+## Data model
 
 ```text
-sitepulse/
-├── src/
-│   └── sitepulse/
-│       ├── __init__.py
-│       ├── api.py
-│       ├── cli.py
-│       ├── crawler.py
-│       ├── linkcheck.py
-│       ├── quality.py
-│       ├── scanner.py
-│       └── security.py
-├── tests/
-│   ├── test_api.py
-│   ├── test_crawler.py
-│   ├── test_linkcheck.py
-│   ├── test_quality.py
-│   ├── test_scanner.py
-│   └── test_security.py
-├── .github/
-│   └── workflows/
-│       └── tests.yml
-├── pyproject.toml
-├── requirements.txt
-└── README.md
+Website
+   │
+   └── Scan
+        ├── Page
+        │    └── Issue
+        ├── Crawl Error
+        └── Broken Link
 ```
+
+A website can have many scans, which lets SitePulse keep historical results and
+eventually show changes in site health over time.
 
 ## Setup
 
@@ -116,19 +108,19 @@ Start the development server:
 uvicorn sitepulse.api:app --reload
 ```
 
-Then open the interactive API documentation at:
+Open the interactive documentation:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-Health check:
+### Health check
 
 ```http
 GET /health
 ```
 
-Run a website scan:
+### Run and save a scan
 
 ```http
 POST /api/scans
@@ -146,38 +138,58 @@ Example request:
 }
 ```
 
-Example response shape:
+Every successful scan is saved automatically and receives an integer `id`.
 
-```json
-{
-  "start_url": "https://www.python.org",
-  "site_health": 98,
-  "pages_scanned": 5,
-  "total_issues": 3,
-  "severity": {
-    "high": 0,
-    "medium": 0,
-    "low": 3
-  },
-  "pages": [],
-  "crawl_errors": [],
-  "link_check": {
-    "checked": 20,
-    "broken_count": 0,
-    "broken": []
-  }
-}
+### View scan history
+
+```http
+GET /api/scans
 ```
+
+Optional history limit:
+
+```http
+GET /api/scans?limit=10
+```
+
+### View one saved scan
+
+```http
+GET /api/scans/{scan_id}
+```
+
+For example:
+
+```http
+GET /api/scans/1
+```
+
+## Database
+
+By default SitePulse creates:
+
+```text
+sitepulse.db
+```
+
+in the project directory.
+
+The database stores websites, scans, pages, issues, crawl errors, and broken
+links. Database files are ignored by Git.
+
+The SQLAlchemy connection URL can be overridden with the
+`SITEPULSE_DATABASE_URL` environment variable, which prepares the persistence
+layer for a production database later.
 
 ## Tests
 
-Run the test suite:
+Run the full test suite:
 
 ```bash
 pytest
 ```
 
-GitHub Actions also runs the tests automatically for pull requests.
+GitHub Actions automatically runs the tests for pull requests.
 
 ## Roadmap
 
@@ -185,22 +197,24 @@ GitHub Actions also runs the tests automatically for pull requests.
 Single-page HTML analysis and CLI reporting.
 
 ### v0.2 — Website crawler ✅
-Breadth-first internal-link crawling, health scoring, and broken-link checks.
+Breadth-first crawling, health scoring, and broken-link checks.
 
 ### v0.3 — REST API ✅
 Expose SitePulse scans through FastAPI.
 
-### v0.4 — Persistence
-Store websites, scans, pages, and issues in SQLite/PostgreSQL.
+### v0.4 — Persistence ✅
+Store websites, scans, pages, issues, crawl errors, and broken links with
+SQLAlchemy and SQLite.
 
 ### v0.5 — Dashboard
-Build an interactive HTML/CSS/JavaScript frontend.
+Build an interactive HTML/CSS/JavaScript frontend with scan history.
 
 ### v1.0 — Portfolio release
-Docker, deployment, screenshots, polished documentation, and a live demo.
+Docker, production database, deployment, screenshots, polished documentation,
+and a live demo.
 
 ## Why this project exists
 
 SitePulse is a practical software engineering project that combines networking,
-HTML parsing, data structures and algorithms, REST APIs, application security,
-testing, databases, frontend development, CI/CD, and deployment.
+HTML parsing, data structures and algorithms, REST APIs, relational databases,
+application security, testing, frontend development, CI/CD, and deployment.
