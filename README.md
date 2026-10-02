@@ -1,27 +1,27 @@
 # SitePulse
 
-SitePulse is a Python website quality scanner and REST API that analyzes public
-websites for common SEO, accessibility, structural, performance, and link issues.
+SitePulse is a full-stack website quality scanner that analyzes public websites
+for common SEO, accessibility, structural, performance, and link issues.
 
-## Current version: v0.4.0
+## Current version: v0.5.0
 
-SitePulse now persists scan history in a relational SQLite database.
+SitePulse now includes a responsive web dashboard on top of the existing REST API
+and relational scan history.
 
 ### Current capabilities
 
-- single-page scanning
-- breadth-first multi-page crawling
-- 0–100 page and site health scores
+- responsive HTML/CSS/JavaScript dashboard
+- scan form with configurable crawl and link-check limits
+- 0–100 site health visualization
 - high / medium / low severity summaries
-- heading hierarchy checks
-- missing title and meta-description checks
-- missing image alt-text checks
-- internal and external link discovery
-- optional internal broken-link checking
+- expandable page-level analysis
+- clickable persistent scan history
+- single-page and breadth-first multi-page scanning
+- heading hierarchy, metadata, and image alt-text checks
+- internal/external link discovery and optional broken-link checks
 - FastAPI REST API with interactive OpenAPI documentation
-- relational scan history with SQLAlchemy
-- saved pages, issues, crawl errors, and broken links
-- API input limits and private-network target protection
+- SQLAlchemy + SQLite relational persistence
+- private-network target protection
 - automated tests with GitHub Actions
 
 ## Tech stack
@@ -31,11 +31,35 @@ SitePulse now persists scan history in a relational SQLite database.
 - Pydantic
 - SQLAlchemy
 - SQLite
+- HTML
+- CSS
+- JavaScript
 - Requests
 - Beautiful Soup
 - Pytest
 - HTTPX
 - GitHub Actions
+
+## Architecture
+
+```text
+Browser Dashboard
+       │
+       ▼
+FastAPI REST API
+       │
+       ├── Scanner / Crawler
+       │       ├── SEO checks
+       │       ├── Accessibility checks
+       │       ├── Structure checks
+       │       └── Link checks
+       │
+       ▼
+SQLAlchemy
+       │
+       ▼
+SQLite
+```
 
 ## Data model
 
@@ -48,9 +72,6 @@ Website
         ├── Crawl Error
         └── Broken Link
 ```
-
-A website can have many scans, which lets SitePulse keep historical results and
-eventually show changes in site health over time.
 
 ## Setup
 
@@ -80,6 +101,30 @@ Install SitePulse:
 pip install -e .
 ```
 
+## Run the web application
+
+Start the development server:
+
+```bash
+uvicorn sitepulse.api:app --reload
+```
+
+Open the dashboard:
+
+```text
+http://127.0.0.1:8000/
+```
+
+Open the interactive API documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+The dashboard uses the same REST API as external clients. Running a scan from the
+browser automatically persists it to the database and refreshes the recent-scan
+history.
+
 ## Command-line usage
 
 Scan one page:
@@ -102,32 +147,14 @@ sitepulse https://www.python.org --crawl --max-pages 5 --check-links --max-links
 
 ## REST API
 
-Start the development server:
-
-```bash
-uvicorn sitepulse.api:app --reload
-```
-
-Open the interactive documentation:
-
 ```text
-http://127.0.0.1:8000/docs
-```
-
-### Health check
-
-```http
-GET /health
-```
-
-### Run and save a scan
-
-```http
+GET  /health
 POST /api/scans
-Content-Type: application/json
+GET  /api/scans
+GET  /api/scans/{scan_id}
 ```
 
-Example request:
+Example scan request:
 
 ```json
 {
@@ -138,48 +165,13 @@ Example request:
 }
 ```
 
-Every successful scan is saved automatically and receives an integer `id`.
-
-### View scan history
-
-```http
-GET /api/scans
-```
-
-Optional history limit:
-
-```http
-GET /api/scans?limit=10
-```
-
-### View one saved scan
-
-```http
-GET /api/scans/{scan_id}
-```
-
-For example:
-
-```http
-GET /api/scans/1
-```
-
 ## Database
 
-By default SitePulse creates:
-
-```text
-sitepulse.db
-```
-
-in the project directory.
-
-The database stores websites, scans, pages, issues, crawl errors, and broken
-links. Database files are ignored by Git.
+By default SitePulse creates `sitepulse.db` in the project directory. Database
+files are ignored by Git.
 
 The SQLAlchemy connection URL can be overridden with the
-`SITEPULSE_DATABASE_URL` environment variable, which prepares the persistence
-layer for a production database later.
+`SITEPULSE_DATABASE_URL` environment variable.
 
 ## Tests
 
@@ -206,12 +198,12 @@ Expose SitePulse scans through FastAPI.
 Store websites, scans, pages, issues, crawl errors, and broken links with
 SQLAlchemy and SQLite.
 
-### v0.5 — Dashboard
-Build an interactive HTML/CSS/JavaScript frontend with scan history.
+### v0.5 — Dashboard ✅
+Responsive HTML/CSS/JavaScript frontend with scan results and persistent history.
 
 ### v1.0 — Portfolio release
-Docker, production database, deployment, screenshots, polished documentation,
-and a live demo.
+Docker, PostgreSQL, cloud deployment, screenshots, polished documentation, and
+a live public demo.
 
 ## Why this project exists
 
