@@ -5,12 +5,24 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-production-4169E1)
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20SitePulse-2dd4bf)](https://sitepulse-oxhc.onrender.com)
+[![API Docs](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D)](https://sitepulse-oxhc.onrender.com/docs)
+
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Silvacar005/sitepulse)
 
 **SitePulse** is a full-stack website quality scanner built by **Carlos Silva**.
 It crawls public websites, identifies SEO, accessibility, structure, performance,
 and link-health issues, calculates a 0–100 health score, and stores scan history
 for later review.
+
+## Live demo
+
+**Application:** https://sitepulse-oxhc.onrender.com  
+**API documentation:** https://sitepulse-oxhc.onrender.com/docs  
+**Health endpoint:** https://sitepulse-oxhc.onrender.com/health
+
+> The public demo runs on Render's free tier. After a period of inactivity, the
+> service may need a short cold start before the first request completes.
 
 ## Highlights
 
@@ -85,7 +97,7 @@ erDiagram
 **Data:** SQLAlchemy, SQLite, PostgreSQL, psycopg  
 **Frontend:** HTML, CSS, JavaScript  
 **Quality:** Pytest, HTTPX, GitHub Actions  
-**Deployment:** Docker, Docker Compose, Render
+**Deployment:** Docker, Docker Compose, Render (live)
 
 ## Quick start
 
@@ -222,7 +234,7 @@ image through GitHub Actions.
 | v0.3 | FastAPI REST API |
 | v0.4 | Relational scan persistence |
 | v0.5 | Interactive dashboard |
-| **v1.0** | **Docker, PostgreSQL, CI, and cloud deployment readiness** |
+| **v1.0** | **Docker, PostgreSQL, CI, and live Render deployment** |
 
 ## Security
 
