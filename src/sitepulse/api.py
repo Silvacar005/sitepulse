@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -16,6 +19,8 @@ from sitepulse.security import validate_public_url
 
 init_db()
 
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+
 app = FastAPI(
     title="SitePulse API",
     version=__version__,
@@ -24,6 +29,8 @@ app = FastAPI(
         "structure, performance, broken-link checks, and scan history."
     ),
 )
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 class ScanRequest(BaseModel):
@@ -167,6 +174,11 @@ def scan_record_to_response(scan: ScanRecord) -> ScanResponse:
         ],
         link_check=link_check,
     )
+
+
+@app.get("/", include_in_schema=False)
+def dashboard() -> FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")
 
 
 @app.get("/health")
