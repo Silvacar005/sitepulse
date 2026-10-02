@@ -5,6 +5,8 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-production-4169E1)
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Silvacar005/sitepulse)
+
 **SitePulse** is a full-stack website quality scanner built by **Carlos Silva**.
 It crawls public websites, identifies SEO, accessibility, structure, performance,
 and link-health issues, calculates a 0–100 health score, and stores scan history
