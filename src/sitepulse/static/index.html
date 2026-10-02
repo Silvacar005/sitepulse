@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SitePulse website quality scanner dashboard">
+  <title>SitePulse — Website Quality Scanner</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="SitePulse home">
+        <span class="brand-mark" aria-hidden="true">SP</span>
+        <span>
+          <strong>SitePulse</strong>
+          <small>Website quality scanner</small>
+        </span>
+      </a>
+      <nav class="topnav" aria-label="Main navigation">
+        <a href="#scanner">Scanner</a>
+        <a href="#history">History</a>
+        <a href="/docs" target="_blank" rel="noopener">API Docs</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="scanner">
+        <div class="hero-copy">
+          <p class="eyebrow">SCAN · SCORE · IMPROVE</p>
+          <h1>See the health of a website in seconds.</h1>
+          <p class="hero-text">
+            Crawl pages, surface SEO and accessibility issues, check internal links,
+            and track site health over time.
+          </p>
+        </div>
+
+        <form id="scan-form" class="scan-card">
+          <label for="url">Website URL</label>
+          <div class="url-row">
+            <input
+              id="url"
+              name="url"
+              type="text"
+              inputmode="url"
+              autocomplete="url"
+              placeholder="https://www.python.org"
+              required
+            >
+            <button id="scan-button" type="submit">
+              <span class="button-label">Scan site</span>
+              <span class="button-spinner" aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <div class="scan-options">
+            <label>
+              <span>Pages to scan</span>
+              <input id="max-pages" type="number" min="1" max="100" value="5">
+            </label>
+            <label class="check-option">
+              <input id="check-links" type="checkbox" checked>
+              <span>Check internal links</span>
+            </label>
+            <label>
+              <span>Links to check</span>
+              <input id="max-links" type="number" min="1" max="500" value="20">
+            </label>
+          </div>
+
+          <p id="scan-status" class="scan-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section id="result-section" class="results hidden" aria-live="polite">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">LATEST RESULT</p>
+            <h2 id="result-domain">Scan result</h2>
+          </div>
+          <p id="result-time" class="muted"></p>
+        </div>
+
+        <div class="overview-grid">
+          <article class="score-card">
+            <div class="score-ring" id="score-ring">
+              <div>
+                <strong id="health-score">--</strong>
+                <span>/100</span>
+              </div>
+            </div>
+            <div>
+              <p class="metric-label">Site health</p>
+              <p id="health-label" class="health-label">Waiting for scan</p>
+            </div>
+          </article>
+
+          <article class="metric-card">
+            <span>Pages scanned</span>
+            <strong id="pages-scanned">0</strong>
+          </article>
+          <article class="metric-card">
+            <span>Total issues</span>
+            <strong id="total-issues">0</strong>
+          </article>
+          <article class="metric-card">
+            <span>Broken links</span>
+            <strong id="broken-links">0</strong>
+          </article>
+        </div>
+
+        <div class="severity-grid">
+          <article class="severity-card high">
+            <span class="severity-dot"></span>
+            <div><strong id="high-count">0</strong><span>High severity</span></div>
+          </article>
+          <article class="severity-card medium">
+            <span class="severity-dot"></span>
+            <div><strong id="medium-count">0</strong><span>Medium severity</span></div>
+          </article>
+          <article class="severity-card low">
+            <span class="severity-dot"></span>
+            <div><strong id="low-count">0</strong><span>Low severity</span></div>
+          </article>
+        </div>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">PAGE ANALYSIS</p>
+              <h3>Scanned pages</h3>
+            </div>
+            <span id="page-count-badge" class="badge">0 pages</span>
+          </div>
+          <div id="pages-list" class="pages-list"></div>
+        </section>
+      </section>
+
+      <section class="history-section" id="history">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">PERSISTENT HISTORY</p>
+            <h2>Recent scans</h2>
+          </div>
+          <button id="refresh-history" class="secondary-button" type="button">Refresh</button>
+        </div>
+
+        <div id="history-empty" class="empty-state hidden">
+          <strong>No scans yet.</strong>
+          <span>Run your first scan above and it will appear here.</span>
+        </div>
+        <div id="history-list" class="history-list"></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>SitePulse v0.5 · Built by Carlos Silva</span>
+      <span>Python · FastAPI · SQLAlchemy · JavaScript</span>
+    </footer>
+  </div>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
