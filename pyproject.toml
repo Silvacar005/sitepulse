@@ -4,8 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sitepulse"
-version = "0.4.0"
-description = "A website quality scanner for SEO, accessibility, and structural issues."\nauthors = [{ name = "Carlos Silva" }]
+version = "0.5.0"
+description = "A website quality scanner for SEO, accessibility, and structural issues."
+authors = [{ name = "Carlos Silva" }]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -19,6 +20,9 @@ dependencies = [
 
 [project.scripts]
 sitepulse = "sitepulse.cli:main"
+
+[tool.setuptools.package-data]
+sitepulse = ["static/*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

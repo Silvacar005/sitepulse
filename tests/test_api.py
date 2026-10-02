@@ -128,3 +128,21 @@ def test_missing_saved_scan_returns_404():
     response = client.get("/api/scans/999999999")
 
     assert response.status_code == 404
+
+
+def test_dashboard_is_served():
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert "SitePulse" in response.text
+    assert "Website quality scanner" in response.text
+
+
+def test_dashboard_static_assets_are_served():
+    css_response = client.get("/static/styles.css")
+    js_response = client.get("/static/app.js")
+
+    assert css_response.status_code == 200
+    assert "--accent" in css_response.text
+    assert js_response.status_code == 200
+    assert 'fetch("/api/scans"' in js_response.text
