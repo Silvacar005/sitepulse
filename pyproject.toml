@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sitepulse"
-version = "0.5.0"
-description = "A website quality scanner for SEO, accessibility, and structural issues."
+version = "1.0.0"
+description = "A full-stack website quality scanner for SEO, accessibility, structure, performance, and link health."
 authors = [{ name = "Carlos Silva" }]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -16,6 +16,7 @@ dependencies = [
     "uvicorn>=0.30,<1",
     "httpx>=0.27,<1",
     "sqlalchemy>=2.0,<3",
+    "psycopg[binary]>=3.2,<4",
 ]
 
 [project.scripts]

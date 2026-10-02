@@ -1,4 +1,4 @@
-name: Tests
+name: CI
 
 on:
   push:
@@ -20,3 +20,10 @@ jobs:
           pip install pytest
       - name: Run tests
         run: pytest -q
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production image
+        run: docker build -t sitepulse:ci .
