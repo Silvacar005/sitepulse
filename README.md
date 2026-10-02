@@ -218,3 +218,14 @@ and a live demo.
 SitePulse is a practical software engineering project that combines networking,
 HTML parsing, data structures and algorithms, REST APIs, relational databases,
 application security, testing, frontend development, CI/CD, and deployment.
+
+## Copyright and authorship
+
+Copyright © 2026 Carlos Silva. All rights reserved.
+
+SitePulse is publicly available for portfolio and educational review. No license
+is granted to copy, redistribute, sublicense, modify, or use this software in
+another project except as permitted by applicable law or GitHub's Terms of
+Service.
+
+See [COPYRIGHT.md](COPYRIGHT.md) for the full notice.
