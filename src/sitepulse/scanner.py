@@ -134,14 +134,21 @@ def analyze_html(
                 message="Page does not contain an H1 heading.",
             )
         )
-    elif h1_count > 1:
-        issues.append(
-            ScanIssue(
-                severity="low",
-                category="Structure",
-                message=f"Page contains {h1_count} H1 headings.",
+    heading_tags = soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])
+    heading_levels = [int(tag.name[1]) for tag in heading_tags]
+
+    for previous, current in zip(heading_levels, heading_levels[1:]):
+        if current > previous + 1:
+            issues.append(
+                ScanIssue(
+                    severity="low",
+                    category="Structure",
+                    message=(
+                        f"Heading hierarchy skips from H{previous} to H{current}."
+                    ),
+                )
             )
-        )
+            break
 
     images = soup.find_all("img")
     missing_alt = sum(

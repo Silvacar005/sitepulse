@@ -7,9 +7,9 @@ The long-term goal is to turn the scanner into a full-stack dashboard that can
 crawl websites, store scan history, visualize site health, and expose results
 through a REST API.
 
-## Current version: v0.2
+## Current version: v0.2.1
 
-SitePulse now includes a Python scanning engine, command-line interface, and breadth-first multi-page crawler.
+SitePulse now includes a Python scanning engine, breadth-first multi-page crawler, site-health scoring, severity summaries, and optional internal broken-link checks.
 
 ### Checks currently implemented
 
@@ -17,10 +17,10 @@ SitePulse now includes a Python scanning engine, command-line interface, and bre
 - Response time
 - Missing page title
 - Missing meta description
-- Missing or multiple H1 headings
+- Missing H1 headings and skipped heading levels
 - Images missing alt text
 - Internal link extraction
-- External link extraction
+- External link extraction\n- 0–100 page and site health scoring\n- High / medium / low severity summaries\n- Optional internal broken-link checking
 
 ## Tech stack
 

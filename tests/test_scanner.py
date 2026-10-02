@@ -48,3 +48,46 @@ def test_missing_content_creates_issues():
     assert "Page is missing a meta description." in messages
     assert "Page does not contain an H1 heading." in messages
     assert "1 image(s) are missing useful alt text." in messages
+
+
+def test_multiple_h1_headings_are_not_automatically_flagged():
+    html = """
+    <html>
+      <head>
+        <title>Example</title>
+        <meta name="description" content="Description">
+      </head>
+      <body>
+        <h1>First section</h1>
+        <h1>Second section</h1>
+      </body>
+    </html>
+    """
+
+    result = analyze_html("https://example.com", html)
+
+    assert result.h1_count == 2
+    assert not any("H1 headings" in issue.message for issue in result.issues)
+
+
+def test_heading_level_jump_creates_low_severity_issue():
+    html = """
+    <html>
+      <head>
+        <title>Example</title>
+        <meta name="description" content="Description">
+      </head>
+      <body>
+        <h1>Main heading</h1>
+        <h3>Skipped H2</h3>
+      </body>
+    </html>
+    """
+
+    result = analyze_html("https://example.com", html)
+
+    assert any(
+        issue.severity == "low"
+        and issue.message == "Heading hierarchy skips from H1 to H3."
+        for issue in result.issues
+    )
