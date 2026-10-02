@@ -7,9 +7,9 @@ The long-term goal is to turn the scanner into a full-stack dashboard that can
 crawl websites, store scan history, visualize site health, and expose results
 through a REST API.
 
-## Current version: v0.1
+## Current version: v0.2
 
-The first milestone provides a Python scanning engine and command-line interface.
+SitePulse now includes a Python scanning engine, command-line interface, and breadth-first multi-page crawler.
 
 ### Checks currently implemented
 
