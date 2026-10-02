@@ -26,7 +26,7 @@ class LinkCheckSummary:
 
 def check_link(url: str, timeout: int = 5) -> LinkCheck:
     """Check one HTTP link using HEAD with a GET fallback."""
-    headers = {"User-Agent": "SitePulse/0.2 (+portfolio website quality scanner)"}
+    headers = {"User-Agent": "SitePulse/0.3 (+portfolio website quality scanner)"}
     started = perf_counter()
 
     try:

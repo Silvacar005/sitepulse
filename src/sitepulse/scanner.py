@@ -197,7 +197,7 @@ def scan_url(url: str, timeout: int = 10) -> ScanResult:
     normalized = normalize_url(url)
 
     headers = {
-        "User-Agent": "SitePulse/0.1 (+portfolio website quality scanner)"
+        "User-Agent": "SitePulse/0.3 (+portfolio website quality scanner)"
     }
 
     started = perf_counter()
