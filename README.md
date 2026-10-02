@@ -1,131 +1,169 @@
 # SitePulse
 
-SitePulse is a full-stack website quality scanner that analyzes public websites
-for common SEO, accessibility, structural, performance, and link issues.
+[![CI](https://github.com/Silvacar005/sitepulse/actions/workflows/tests.yml/badge.svg)](https://github.com/Silvacar005/sitepulse/actions/workflows/tests.yml)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB)
+![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-production-4169E1)
 
-## Current version: v0.5.0
+**SitePulse** is a full-stack website quality scanner built by **Carlos Silva**.
+It crawls public websites, identifies SEO, accessibility, structure, performance,
+and link-health issues, calculates a 0–100 health score, and stores scan history
+for later review.
 
-SitePulse now includes a responsive web dashboard on top of the existing REST API
-and relational scan history.
-
-### Current capabilities
+## Highlights
 
 - responsive HTML/CSS/JavaScript dashboard
-- scan form with configurable crawl and link-check limits
-- 0–100 site health visualization
-- high / medium / low severity summaries
-- expandable page-level analysis
-- clickable persistent scan history
-- single-page and breadth-first multi-page scanning
-- heading hierarchy, metadata, and image alt-text checks
-- internal/external link discovery and optional broken-link checks
-- FastAPI REST API with interactive OpenAPI documentation
-- SQLAlchemy + SQLite relational persistence
-- private-network target protection
-- automated tests with GitHub Actions
+- breadth-first multi-page crawler
+- 0–100 site and page health scoring
+- high / medium / low severity classification
+- title and meta-description checks
+- heading hierarchy analysis
+- image alt-text checks
+- internal and external link discovery
+- optional broken-link checking
+- FastAPI REST API with OpenAPI documentation
+- SQLAlchemy relational persistence
+- SQLite for local development
+- PostgreSQL support for production
+- SSRF-oriented public-target validation
+- Docker and Docker Compose support
+- Render deployment Blueprint
+- automated tests and Docker builds with GitHub Actions
 
-## Tech stack
+## Dashboard
 
-- Python
-- FastAPI
-- Pydantic
-- SQLAlchemy
-- SQLite
-- HTML
-- CSS
-- JavaScript
-- Requests
-- Beautiful Soup
-- Pytest
-- HTTPX
-- GitHub Actions
+The dashboard lets a user enter a website, choose a crawl limit, optionally check
+links, inspect health metrics, expand page-level findings, and reopen previous
+scans from persistent history.
+
+Example result from scanning Python.org:
+
+```text
+Site health     98 / 100
+Pages scanned    5
+Total issues     3
+Broken links     0
+
+Severity
+High             0
+Medium           0
+Low              3
+```
 
 ## Architecture
 
-```text
-Browser Dashboard
-       │
-       ▼
-FastAPI REST API
-       │
-       ├── Scanner / Crawler
-       │       ├── SEO checks
-       │       ├── Accessibility checks
-       │       ├── Structure checks
-       │       └── Link checks
-       │
-       ▼
-SQLAlchemy
-       │
-       ▼
-SQLite
+```mermaid
+flowchart TD
+    Browser[Browser Dashboard] --> API[FastAPI REST API]
+    CLI[CLI] --> Crawler
+    API --> Crawler[Website Crawler]
+    Crawler --> Scanner[HTML Scanner]
+    Crawler --> Links[Link Checker]
+    Scanner --> Quality[Health Scoring]
+    API --> Persistence[Persistence Layer]
+    Persistence --> ORM[SQLAlchemy]
+    ORM --> SQLite[(SQLite - Local)]
+    ORM --> Postgres[(PostgreSQL - Production)]
 ```
 
 ## Data model
 
-```text
-Website
-   │
-   └── Scan
-        ├── Page
-        │    └── Issue
-        ├── Crawl Error
-        └── Broken Link
+```mermaid
+erDiagram
+    WEBSITE ||--o{ SCAN : has
+    SCAN ||--o{ PAGE : contains
+    PAGE ||--o{ ISSUE : reports
+    SCAN ||--o{ CRAWL_ERROR : records
+    SCAN ||--o{ BROKEN_LINK : records
 ```
 
-## Setup
+## Tech stack
 
-Clone the repository and enter the project directory:
+**Backend:** Python, FastAPI, Pydantic, Requests, Beautiful Soup  
+**Data:** SQLAlchemy, SQLite, PostgreSQL, psycopg  
+**Frontend:** HTML, CSS, JavaScript  
+**Quality:** Pytest, HTTPX, GitHub Actions  
+**Deployment:** Docker, Docker Compose, Render
+
+## Quick start
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/Silvacar005/sitepulse.git
 cd sitepulse
 ```
 
-Create a virtual environment:
+Create and activate a virtual environment:
 
 ```bash
 python -m venv .venv
 ```
 
-Activate it on Windows PowerShell:
+Windows PowerShell:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\.venv\Scripts\Activate.ps1
 ```
 
-Install SitePulse:
+Install the project:
 
 ```bash
 pip install -e .
 ```
 
-## Run the web application
-
-Start the development server:
+Start SitePulse:
 
 ```bash
 uvicorn sitepulse.api:app --reload
 ```
 
-Open the dashboard:
+Open:
 
 ```text
-http://127.0.0.1:8000/
+Dashboard: http://127.0.0.1:8000/
+API docs:  http://127.0.0.1:8000/docs
 ```
 
-Open the interactive API documentation:
+## Docker
 
-```text
-http://127.0.0.1:8000/docs
+Run SitePulse alone with SQLite:
+
+```bash
+docker build -t sitepulse .
+docker run --rm -p 8000:8000 sitepulse
 ```
 
-The dashboard uses the same REST API as external clients. Running a scan from the
-browser automatically persists it to the database and refreshes the recent-scan
-history.
+Run the complete local production-style stack with PostgreSQL:
 
-## Command-line usage
+```bash
+docker compose up --build
+```
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for deployment details.
+
+## REST API
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/health` | Service health and version |
+| `POST` | `/api/scans` | Run and persist a scan |
+| `GET` | `/api/scans` | List recent scan history |
+| `GET` | `/api/scans/{scan_id}` | Retrieve a saved scan |
+
+Example request:
+
+```json
+{
+  "url": "https://www.python.org",
+  "max_pages": 5,
+  "check_links": true,
+  "max_links": 20
+}
+```
+
+## CLI
 
 Scan one page:
 
@@ -139,85 +177,65 @@ Crawl multiple pages:
 sitepulse https://www.python.org --crawl --max-pages 5
 ```
 
-Crawl and check discovered internal links:
+Crawl and check internal links:
 
 ```bash
 sitepulse https://www.python.org --crawl --max-pages 5 --check-links --max-links 20
 ```
 
-## REST API
+## Database configuration
+
+SitePulse uses SQLite by default:
 
 ```text
-GET  /health
-POST /api/scans
-GET  /api/scans
-GET  /api/scans/{scan_id}
+sqlite:///./sitepulse.db
 ```
 
-Example scan request:
+For production, set:
 
-```json
-{
-  "url": "https://www.python.org",
-  "max_pages": 5,
-  "check_links": true,
-  "max_links": 20
-}
+```text
+SITEPULSE_DATABASE_URL=postgresql://user:password@host:5432/database
 ```
 
-## Database
-
-By default SitePulse creates `sitepulse.db` in the project directory. Database
-files are ignored by Git.
-
-The SQLAlchemy connection URL can be overridden with the
-`SITEPULSE_DATABASE_URL` environment variable.
+Standard Render-style `postgresql://` connection strings are normalized for
+the psycopg 3 SQLAlchemy driver automatically.
 
 ## Tests
 
-Run the full test suite:
+Run:
 
 ```bash
 pytest
 ```
 
-GitHub Actions automatically runs the tests for pull requests.
+Every pull request runs the full test suite and builds the production Docker
+image through GitHub Actions.
 
-## Roadmap
+## Project evolution
 
-### v0.1 — Scanner engine ✅
-Single-page HTML analysis and CLI reporting.
+| Version | Milestone |
+| --- | --- |
+| v0.1 | Single-page scanner and CLI |
+| v0.2 | BFS crawler, scoring, and link checks |
+| v0.3 | FastAPI REST API |
+| v0.4 | Relational scan persistence |
+| v0.5 | Interactive dashboard |
+| **v1.0** | **Docker, PostgreSQL, CI, and cloud deployment readiness** |
 
-### v0.2 — Website crawler ✅
-Breadth-first crawling, health scoring, and broken-link checks.
+## Security
 
-### v0.3 — REST API ✅
-Expose SitePulse scans through FastAPI.
+SitePulse only intends to scan public HTTP/HTTPS websites. The API rejects
+obvious localhost, private, link-local, and other non-public network targets.
 
-### v0.4 — Persistence ✅
-Store websites, scans, pages, issues, crawl errors, and broken links with
-SQLAlchemy and SQLite.
-
-### v0.5 — Dashboard ✅
-Responsive HTML/CSS/JavaScript frontend with scan results and persistent history.
-
-### v1.0 — Portfolio release
-Docker, PostgreSQL, cloud deployment, screenshots, polished documentation, and
-a live public demo.
-
-## Why this project exists
-
-SitePulse is a practical software engineering project that combines networking,
-HTML parsing, data structures and algorithms, REST APIs, relational databases,
-application security, testing, frontend development, CI/CD, and deployment.
+See [SECURITY.md](SECURITY.md) for additional details.
 
 ## Copyright and authorship
 
 Copyright © 2026 Carlos Silva. All rights reserved.
 
-SitePulse is publicly available for portfolio and educational review. No license
-is granted to copy, redistribute, sublicense, modify, or use this software in
-another project except as permitted by applicable law or GitHub's Terms of
-Service.
+This repository is publicly available for portfolio and educational review. No
+license is granted to copy, redistribute, sublicense, modify, or use this
+software in another project except as permitted by applicable law or GitHub's
+Terms of Service.
 
 See [COPYRIGHT.md](COPYRIGHT.md) for the full notice.
